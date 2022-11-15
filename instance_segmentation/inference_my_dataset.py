@@ -10,7 +10,6 @@ from detectron2.data.datasets import register_coco_instances
 from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
 
-
 def get_top_x_predictions(predictions, x):
     predictions["instances"] = predictions["instances"][:x]
 
@@ -37,25 +36,30 @@ def get_categories(json_path):
         coco = json.load(file)
     categories_list = ["" for i in range(len(coco["categories"]))]
     for category in coco["categories"]:
-        categories_list[category["id"]] = category["name"]
+        categories_list[category["id"]-1] = category["name"]
     return categories_list
 
 
 if __name__ == "__main__":
-    image = cv2.imread("../data/street.jpg")
+    image = cv2.imread("../data/cards/card_test/60734280312127420788862091329.png")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     cfg = get_cfg()
-    cfg.merge_from_file("./configs/fast_rcnn_R_50_FPN_1x.yaml")
+    cfg.merge_from_file("./configs/train_mask_rcnn_fpn.yaml")
+    cfg.MODEL.WEIGHTS = "./logs/cards/model_final.pth"
+
+    register_coco_instances("my_dataset_train", {}, "./labels/cards_train.json", "../data/cards/card_train")
+    register_coco_instances("my_dataset_val", {}, "./labels/cards_test.json", "../data/cards/card_test")
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
+    metadata.thing_classes = get_categories("./labels/cards_test.json")
 
     predictor = DefaultPredictor(cfg)
     predictions = predictor(image)
     predictions["instances"] = predictions["instances"].to("cpu")
 
-    # get_top_x_predictions(predictions, 1)
     get_detections_above_confidence(predictions, 0.8)
+    # get_top_x_predictions(predictions, 1)
 
     labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
     scores = predictions["instances"].scores.numpy()
@@ -63,7 +67,7 @@ if __name__ == "__main__":
 
     visualizer = Visualizer(image)
     visualized_detection = visualizer.overlay_instances(
-        boxes=predictions["instances"].pred_boxes,
+        masks=predictions["instances"].pred_masks,
         labels=view_strings,
         ).get_image()
 

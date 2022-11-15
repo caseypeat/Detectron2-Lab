@@ -50,17 +50,6 @@ if __name__ == "__main__":
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
     cfg.MODEL.WEIGHTS = "./logs/cards/model_final.pth"
 
-    register_coco_instances(
-        name="my_dataset_train",
-        metadata={},
-        json_file="./labels/cards_train.json",
-        image_root="../data/cards/card_train")
-    register_coco_instances(
-        name="my_dataset_val",
-        metadata={},
-        json_file="./labels/cards_test.json",
-        image_root="../data/cards/card_test")
-
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
     metadata.thing_classes = get_categories("./labels/cards_test.json")
 

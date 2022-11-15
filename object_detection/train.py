@@ -22,9 +22,18 @@ if __name__ == "__main__":
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
+    # cfg.OUTPUT_DIR = "./logs/cards_1"
 
-    register_coco_instances("my_dataset_train", {}, "./labels/cards_train.json", "../data/cards/card_train")
-    register_coco_instances("my_dataset_val", {}, "./labels/cards_test.json", "../data/cards/card_test")
+    register_coco_instances(
+        name="my_dataset_train",
+        metadata={},
+        json_file="./labels/cards_train.json",
+        image_root="../data/cards/card_train")
+    register_coco_instances(
+        name="my_dataset_val",
+        metadata={},
+        json_file="./labels/cards_test.json",
+        image_root="../data/cards/card_test")
 
     trainer = Trainer(cfg)
     trainer.resume_or_load(resume=False)

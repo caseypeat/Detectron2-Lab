@@ -10,7 +10,6 @@ from detectron2.data.datasets import register_coco_instances
 from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
 
-
 def get_top_x_predictions(predictions, x):
     predictions["instances"] = predictions["instances"][:x]
 
@@ -46,7 +45,7 @@ if __name__ == "__main__":
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     cfg = get_cfg()
-    cfg.merge_from_file("./configs/fast_rcnn_R_50_FPN_1x.yaml")
+    cfg.merge_from_file("./configs/mask_rcnn_R_50_FPN_3x.yaml")
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
 
@@ -54,8 +53,8 @@ if __name__ == "__main__":
     predictions = predictor(image)
     predictions["instances"] = predictions["instances"].to("cpu")
 
-    # get_top_x_predictions(predictions, 1)
     get_detections_above_confidence(predictions, 0.8)
+    # get_top_x_predictions(predictions, 1)
 
     labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
     scores = predictions["instances"].scores.numpy()
@@ -63,7 +62,7 @@ if __name__ == "__main__":
 
     visualizer = Visualizer(image)
     visualized_detection = visualizer.overlay_instances(
-        boxes=predictions["instances"].pred_boxes,
+        masks=predictions["instances"].pred_masks,
         labels=view_strings,
         ).get_image()
 

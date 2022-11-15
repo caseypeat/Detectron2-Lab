@@ -1,6 +1,9 @@
 # Detectron2 Lab
 
+
+
 # Object Detection
+
 
 ## Inference using pretrained model
 
@@ -8,6 +11,7 @@
  - Copy weights file from xxx to ./object_detection/weights/model_final_b275ba.pkl
  - Move to object detection directory `cd object_detection`
  - Run objection detection inference script `python inference.py`
+
 
 ## Labeling cards
 
@@ -52,4 +56,46 @@
 ### What you should see:
 ![via labeling demo](./images/card_inference.png)
 
+
+
 # Instance Segmentation
+
+
+## Inference using pretrained model
+
+### TODO:
+
+### What you should see:
+![via labeling demo](./images/street_inference.png)
+
+
+## Labeling cards
+
+### TODO:
+
+### What you should see:
+
+
+## Training card instance segmentation
+
+### TODO:
+
+### What you should see:
+`[11/15 22:13:34 d2.utils.events]:  eta: 0:01:46  iter: 19  total_loss: 3.77  loss_cls: 2.55  loss_box_reg: 0.5046  loss_mask: 0.6948  loss_rpn_cls: 0.00397  loss_rpn_loc: 0.004189  time: 0.1099  data_time: 0.0050  lr: 4.9953e-06  max_mem: 2065M`
+
+`[11/15 22:13:37 d2.utils.events]:  eta: 0:01:45  iter: 39  total_loss: 3.687  loss_cls: 2.433  loss_box_reg: 0.595  loss_mask: 0.6741  loss_rpn_cls: 0.00226  loss_rpn_loc: 0.004699  time: 0.1112  data_time: 0.0018  lr: 9.9902e-06  max_mem: 2065M`
+
+`[11/15 22:13:39 d2.utils.events]:  eta: 0:01:43  iter: 59  total_loss: 3.279  loss_cls: 2.058  loss_box_reg: 0.5784  loss_mask: 0.6378  loss_rpn_cls: 0.002329  loss_rpn_loc: 0.005039  time: 0.1109  data_time: 0.0020  lr: 1.4985e-05  max_mem: 2065M`
+
+`[11/15 22:13:41 d2.utils.events]:  eta: 0:01:41  iter: 79  total_loss: 2.704  loss_cls: 1.592  loss_box_reg: 0.5743  loss_mask: 0.5783  loss_rpn_cls: 0.003894  loss_rpn_loc: 0.00432  time: 0.1100  data_time: 0.0018  lr: 1.998e-05  max_mem: 2065M`
+
+`[11/15 22:13:43 d2.utils.events]:  eta: 0:01:38  iter: 99  total_loss: 2.178  loss_cls: 1.019  loss_box_reg: 0.6209  loss_mask: 0.5191  loss_rpn_cls: 0.002507  loss_rpn_loc: 0.003703  time: 0.1096  data_time: 0.0018  lr: 2.4975e-05  max_mem: 2065M`
+
+
+
+## Inference using card model
+
+### TODO:
+
+### What you should see:
+![via labeling demo](./images/card_inference_mask.png)
