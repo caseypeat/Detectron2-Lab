@@ -44,7 +44,6 @@ def get_categories(json_path):
 if __name__ == "__main__":
     image = cv2.imread("../data/card.png")
     image = cv2.imread("../data/cards/card_test/60734280312127420788862091329.png")
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
@@ -70,5 +69,5 @@ if __name__ == "__main__":
         labels=view_strings,
         ).get_image()
 
-    plt.imshow(visualized_detection)
+    plt.imshow(cv2.cvtColor(visualized_detection, cv2.COLOR_BGR2RGB))
     plt.show()

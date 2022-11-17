@@ -43,7 +43,6 @@ def get_categories(json_path):
 
 if __name__ == "__main__":
     image = cv2.imread("../data/street.jpg")
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/fast_rcnn_R_50_FPN_1x.yaml")
@@ -67,5 +66,5 @@ if __name__ == "__main__":
         labels=view_strings,
         ).get_image()
 
-    plt.imshow(visualized_detection)
+    plt.imshow(cv2.cvtColor(visualized_detection, cv2.COLOR_BGR2RGB))
     plt.show()
