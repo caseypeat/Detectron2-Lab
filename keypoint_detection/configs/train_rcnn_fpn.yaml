@@ -1,0 +1,17 @@
+_BASE_: "./Base-Keypoint-RCNN-FPN.yaml"
+MODEL:
+  WEIGHTS: "./weights/model_final_04e291.pkl"
+  RESNETS:
+    DEPTH: 50
+  ROI_KEYPOINT_HEAD:
+    NUM_KEYPOINTS: 21
+SOLVER:
+  IMS_PER_BATCH: 2
+  BASE_LR: 0.00025
+  MAX_ITER: 3000
+  STEPS: []
+DATASETS:
+  TRAIN: ("hands_dataset",)
+  TEST: ("hands_dataset",)
+TEST:
+  KEYPOINT_OKS_SIGMAS: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
