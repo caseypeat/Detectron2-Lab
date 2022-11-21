@@ -48,6 +48,7 @@ if __name__ == "__main__":
     cfg.merge_from_file("./configs/keypoint_rcnn_R_50_FPN_1x.yaml")
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
+    print(metadata.keypoint_connection_rules)
 
     predictor = DefaultPredictor(cfg)
     predictions = predictor(image)
@@ -55,13 +56,13 @@ if __name__ == "__main__":
 
     # get_top_x_predictions(predictions, 2)
     get_detections_above_confidence(predictions, 0.9)
-    print(predictions["instances"].pred_keypoints)
+    # print(predictions["instances"].pred_keypoints)
 
     labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
     scores = predictions["instances"].scores.numpy()
     view_strings = combine_label_and_score(labels, scores)
 
-    visualizer = Visualizer(image, metadata=MetadataCatalog.get(cfg.DATASETS.TRAIN[0]))
+    visualizer = Visualizer(image, metadata=metadata)
     visualized_detection = visualizer.overlay_instances(
         keypoints=predictions["instances"].pred_keypoints,
         boxes=predictions["instances"].pred_boxes,

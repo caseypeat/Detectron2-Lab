@@ -37,7 +37,7 @@ def get_categories(json_path):
         coco = json.load(file)
     categories_list = ["" for i in range(len(coco["categories"]))]
     for category in coco["categories"]:
-        categories_list[category["id"]] = category["name"]
+        categories_list[category["id"]-1] = category["name"]
     return categories_list
 
 
@@ -49,27 +49,89 @@ if __name__ == "__main__":
     cfg.MODEL.WEIGHTS = "./logs/test/3/model_final.pth"
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
-    # metadata.thing_classes = get_categories("./labels/hands.json")
+    metadata.thing_classes = get_categories("./labels/hands.json")
+    metadata.keypoint_names = [
+        "F4_KNU1_A",
+        "F4_KNU1_B",
+        "F4_KNU2_A",
+        "F4_KNU3_A",
+        "F3_KNU1_A",
+        "F3_KNU1_B",
+        "F3_KNU2_A",
+        "F3_KNU3_A",
+        "F1_KNU1_A",
+        "F1_KNU1_B",
+        "F1_KNU2_A",
+        "F1_KNU3_A",
+        "F2_KNU1_A",
+        "F2_KNU1_B",
+        "F2_KNU2_A",
+        "F2_KNU3_A",
+        "TH_KNU1_A",
+        "TH_KNU1_B",
+        "TH_KNU2_A",
+        "TH_KNU3_A",
+        "PALM_POSITION",
+    ]
+    metadata.keypoint_connection_rules = [
+        ("F4_KNU1_B", "F4_KNU1_A", (255, 0, 0)),
+        ("F4_KNU1_A", "F4_KNU2_A", (0, 255, 0)),
+        ("F4_KNU2_A", "F4_KNU3_A", (0, 0, 255)),
+
+        ("F3_KNU1_B", "F3_KNU1_A", (255, 0, 0)),
+        ("F3_KNU1_A", "F3_KNU2_A", (0, 255, 0)),
+        ("F3_KNU2_A", "F3_KNU3_A", (0, 0, 255)),
+
+        ("F1_KNU1_B", "F1_KNU1_A", (255, 0, 0)),
+        ("F1_KNU1_A", "F1_KNU2_A", (0, 255, 0)),
+        ("F1_KNU2_A", "F1_KNU3_A", (0, 0, 255)),
+
+        ("F2_KNU1_B", "F2_KNU1_A", (255, 0, 0)),
+        ("F2_KNU1_A", "F2_KNU2_A", (0, 255, 0)),
+        ("F2_KNU2_A", "F2_KNU3_A", (0, 0, 255)),
+
+        ("TH_KNU1_B", "TH_KNU1_A", (255, 0, 0)),
+        ("TH_KNU1_A", "TH_KNU2_A", (0, 255, 0)),
+        ("TH_KNU2_A", "TH_KNU3_A", (0, 0, 255)),
+    ]
+    print(metadata.keypoint_connection_rules)
+    print(metadata.keypoint_names)
 
     predictor = DefaultPredictor(cfg)
     predictions = predictor(image)
     predictions["instances"] = predictions["instances"].to("cpu")
 
     get_top_x_predictions(predictions, 1)
-    print(predictions["instances"].pred_keypoints)
-    for i in range(21):
-        image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
+    # print(predictions["instances"].pred_keypoints)
+    # image = cv2.circle(
+    #     image,
+    #     (int(predictions["instances"].pred_keypoints[0, 0, 0]), int(predictions["instances"].pred_keypoints[0, 0, 1])),
+    #     radius=3, color=(255, 0, 0), thickness=-1)
+    # image = cv2.circle(
+    #     image,
+    #     (int(predictions["instances"].pred_keypoints[0, 1, 0]), int(predictions["instances"].pred_keypoints[0, 1, 1])),
+    #     radius=3, color=(0, 255, 0), thickness=-1)
+    # image = cv2.circle(
+    #     image,
+    #     (int(predictions["instances"].pred_keypoints[0, 2, 0]), int(predictions["instances"].pred_keypoints[0, 2, 1])),
+    #     radius=3, color=(0, 0, 255), thickness=-1)
+    # image = cv2.circle(
+    #     image,
+    #     (int(predictions["instances"].pred_keypoints[0, 3, 0]), int(predictions["instances"].pred_keypoints[0, 3, 1])),
+    #     radius=3, color=(0, 255, 255), thickness=-1)
+    # for i in range(21):
+    #     image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
     # get_detections_above_confidence(predictions, 0.9)
 
-    # labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
-    # scores = predictions["instances"].scores.numpy()
-    # view_strings = combine_label_and_score(labels, scores)
+    labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
+    scores = predictions["instances"].scores.numpy()
+    view_strings = combine_label_and_score(labels, scores)
 
-    visualizer = Visualizer(image, metadata=MetadataCatalog.get(cfg.DATASETS.TRAIN[0]))
+    visualizer = Visualizer(image, metadata=metadata)
     visualized_detection = visualizer.overlay_instances(
         keypoints=predictions["instances"].pred_keypoints,
         boxes=predictions["instances"].pred_boxes,
-        # labels=view_strings
+        labels=view_strings
         ).get_image()
 
     plt.imshow(cv2.cvtColor(visualized_detection, cv2.COLOR_BGR2RGB))
