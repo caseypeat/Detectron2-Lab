@@ -45,15 +45,14 @@ if __name__ == "__main__":
     # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/Ricki_unit_8.flv_000114_l.jpg")
     # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/005236037_01_l.jpg")
     # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/007928028_01_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/multiview_hand/data_12/188_webcam_2.jpg")
-    image = cv2.imread("/home/casey/Pictures/hand_test2.jpg")
+    # image = cv2.imread("/home/casey/Pictures/hand_test2.jpg")
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
     cfg.MODEL.WEIGHTS = "./logs/multiview_test/3/model_final.pth"
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
-    metadata.thing_classes = get_categories("../data/multiview_hands.json")
+    metadata.thing_classes = get_categories("../data/hands_labels.json")
     metadata.keypoint_names = [
         "F4_KNU1_A",
         "F4_KNU1_B",
@@ -101,49 +100,36 @@ if __name__ == "__main__":
     print(metadata.keypoint_connection_rules)
     print(metadata.keypoint_names)
 
-    predictor = DefaultPredictor(cfg)
-    predictions = predictor(image)
-    predictions["instances"] = predictions["instances"].to("cpu")
+    cap = cv2.VideoCapture(0)
 
-    get_top_x_predictions(predictions, 1)
-    # print(predictions["instances"].pred_keypoints)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 0, 0]), int(predictions["instances"].pred_keypoints[0, 0, 1])),
-    #     radius=3, color=(255, 0, 0), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 1, 0]), int(predictions["instances"].pred_keypoints[0, 1, 1])),
-    #     radius=3, color=(0, 255, 0), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 2, 0]), int(predictions["instances"].pred_keypoints[0, 2, 1])),
-    #     radius=3, color=(0, 0, 255), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 3, 0]), int(predictions["instances"].pred_keypoints[0, 3, 1])),
-    #     radius=3, color=(0, 255, 255), thickness=-1)
-    # for i in range(21):
-    #     image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
-    # get_detections_above_confidence(predictions, 0.9)
+    while True:
+        ret, image = cap.read()  # Read an frame from the webcam.
 
-    print(predictions["instances"].pred_keypoints)
+        predictor = DefaultPredictor(cfg)
+        predictions = predictor(image)
+        predictions["instances"] = predictions["instances"].to("cpu")
 
-    # if len(predictions["instances"].pred_keypoints) > 0:
-    #     for i in range(21):
-    #         image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
+        get_top_x_predictions(predictions, 1)
 
+        # print(len(predictions["instances"].pred_keypoints))
 
-    labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
-    scores = predictions["instances"].scores.numpy()
-    view_strings = combine_label_and_score(labels, scores)
+        # if len(predictions["instances"].pred_keypoints) > 0:
+        #     for i in range(21):
+        #         image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
 
-    visualizer = Visualizer(image, metadata=metadata)
-    visualized_detection = visualizer.overlay_instances(
-        keypoints=predictions["instances"].pred_keypoints,
-        boxes=predictions["instances"].pred_boxes,
-        labels=view_strings
-        ).get_image()
+        labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
+        scores = predictions["instances"].scores.numpy()
+        view_strings = combine_label_and_score(labels, scores)
 
-    plt.imshow(cv2.cvtColor(visualized_detection, cv2.COLOR_BGR2RGB))
-    plt.show()
+        visualizer = Visualizer(image, metadata=metadata)
+        visualized_detection = visualizer.overlay_instances(
+            keypoints=predictions["instances"].pred_keypoints,
+            boxes=predictions["instances"].pred_boxes,
+            labels=view_strings
+            ).get_image()
+
+        cv2.imshow('frame', visualized_detection)  # While we're here, we might as well show it on the screen.
+
+        # Close the script when q is pressed.
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
