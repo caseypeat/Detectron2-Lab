@@ -42,7 +42,7 @@ def get_categories(json_path):
 
 
 if __name__ == "__main__":
-    image = cv2.imread("../data/street.jpg")
+    image = cv2.imread("../images/people.jpeg")
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/keypoint_rcnn_R_50_FPN_1x.yaml")
@@ -56,7 +56,6 @@ if __name__ == "__main__":
 
     # get_top_x_predictions(predictions, 2)
     get_detections_above_confidence(predictions, 0.9)
-    # print(predictions["instances"].pred_keypoints)
 
     labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
     scores = predictions["instances"].scores.numpy()

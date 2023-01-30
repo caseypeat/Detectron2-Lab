@@ -1,29 +1,40 @@
 # Detectron2 Lab
+ 
+The goal of this lab is to provide an introduction to the computer vision tasks objection detection, instance segmentation, and keypoint detection using deep neural networks. We do this using the Detectron2 project which provides a range of implemented methods, as well as pre-trained models.
 
+Copy the lab to your local drive
+`cp -r /csse/misc/course/cosc428/labs/Detectron2-Lab /local/labs/Detectron2-Lab`
 
+If you are outside university, the scripts can be downloaded from the gitlab repository (Note: this does not include model files, or data)
+`git clone https://eng-git.canterbury.ac.nz/cpe44/Detectron2-Lab.git`
+
+Activate enviroment for detectron2 lab
+`source /csse/misc/course/cosc428/enviroments/detectron2/bin/activate`
 
 # Object Detection
 
 
-## Inference using pretrained model
+## Inference using COCO pretrained model
 
 ### TODO:
- - Copy weights file from xxx to ./object_detection/weights/model_final_b275ba.pkl
- - Move to object detection directory `cd object_detection`
- - Run objection detection inference script `python inference.py`
 
+(Github clone only)
+- Download model from `https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_50_FPN_1x/137257794/model_final_b275ba.pkl` and copy to `./object_detection/weights/model_final_b275ba.pkl`
+
+- Move to object detection directory `cd object_detection`
+- Run objection detection inference script `python inference_coco_dataset.py`
 
 ## Labeling cards
 
 ### TODO:
  - Open `via_mod.html` using a web browser
- - Add files from xxx 'cards_train'
+ - Add files from `./data/cards_train` 'cards_train'
  - Add a 'card' region atribute of type drop down
  - Add ids 1-3 with descriptions 'magic', 'yugio', and 'pokemon' (these are our classes)
  - Use the rectangle region shape to annotate the card, and add a card classes using the drop down menu
  - Repeat for all cards (or atleast ~30)
  - Under the Annotation menu, select 'Export Annotations (COCO format)'
- - Move the downloaded json file to 'object_detection/labels/cards_train.json'
+ - Move the downloaded json file to `./object_detection/labels/cards_train.json`
  - Repeat for 'cards_test' directory
 
 ### What you should see:
@@ -32,8 +43,7 @@
 ## Training card object detector
 
 ### TODO:
- - Run object detection training script 'python train.py'
- - 
+ - Run object detection training script `python train.py`
 
 ### What you should see:
 `[11/14 20:41:39 d2.utils.events]:  eta: 0:01:51  iter: 19  total_loss: 1.589  loss_cls: 1.439  loss_box_reg: 0.1429  loss_rpn_cls: 0.004999 loss_rpn_loc: 0.004084  time: 0.1136  data_time: 0.0048  lr: 4.9953e-06  max_mem: 2030M`
@@ -50,31 +60,42 @@
 ## Inference using card model
 
 ### TODO:
- - Run object detection training script 'python inference_my_dataset.py'
- - 
+ - Run object detection training script `python inference_my_dataset.py`
 
 ### What you should see:
-![via labeling demo](./images/card_inference.png)
+![object_detection_example](./images/card_inference.png)
 
 
 
 # Instance Segmentation
 
-
-## Inference using pretrained model
+## Inference using COCO pretrained model
 
 ### TODO:
+- Download model from `https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl` and copy to `./instance_segmentation/weights/model_final_f10217.pkl`
+
+- Move to object detection directory `cd instance_segmentation`
+- Run objection detection inference script `python inference_coco_dataset.py`
 
 ### What you should see:
-![via labeling demo](./images/street_inference.png)
+![street_inference](./images/street_inference.png)
 
 
 ## Labeling cards
 
 ### TODO:
+ - Open `via_mod.html` using a web browser
+ - Add files from `./data/cards_train`
+ - Add a 'card' region atribute of type drop down
+ - Add ids 1-3 with descriptions 'magic', 'yugio', and 'pokemon' (these are our classes)
+ - Use the n-point polygon shape to annotate the card, and add a card classes using the drop down menu
+ - Repeat for all cards (or atleast ~30)
+ - Under the Annotation menu, select 'Export Annotations (COCO format)'
+ - Move the downloaded json file to `./instace_segmentation/labels/cards_train.json`
+ - Repeat for 'cards_test' directory
 
 ### What you should see:
-
+![via labeling demo](./images/via_labelling_instance_segmentation.png)
 
 ## Training card instance segmentation
 
@@ -98,4 +119,39 @@
 ### TODO:
 
 ### What you should see:
-![via labeling demo](./images/card_inference_mask.png)
+![instance_segmentation_example](./images/card_inference_mask.png)
+
+
+
+# Keypoint Detection (Pose Estimation)
+Pose Estimation is the process of determining what pose a person is currently in based on some data. For example, where keypoints such as their head, hands, feet and joints are. There are a range of applications for this; the most common being for use in the film or video game industry. Until recently, the best option for those who couldn’t afford massive camera arrays and dozens of reflective dots, was to apply 3D camera technology. The most notable implementation of this method came from Microsoft with the Kinect camera on the Xbox 360.
+
+## Inference using COCO pretrained model
+
+### TODO:
+- Move to object detection directory `cd keypoint_detection`
+- Run objection detection inference script `python inference_coco_dataset.py`
+
+### What you should see:
+![keypoint_example](./images/people_keypoint.png)
+
+## Inference using multiview_hands dataset trained model
+- Run hand keypoint detectron inference script `python inference_hand_dataset.py`
+
+### What you should see:
+![keypoint_example](./images/example_multiview_hand_keypoint.png)
+
+- Run live hand keypoint detectron inference script `python inference_hand_dataset_live.py`
+
+## (Optional) Generating COCO format keypoint labels
+If you would like to train keypoint detectron on your own dataset, the specification can be found [here](https://cocodataset.org/#format-data). Note that unless your dataset labels are already in COCO format you will have to write your own script for the conversion.
+
+- `cd hand_dataset_scripts`
+- `python raw_to_coco_multiview.py`
+
+The coco format labels output from this script can be found at `./keypoint_detection/labels/multiview_hands.json`
+
+## (Optional) Training hand keypoint detection
+Finally if you would like to train the keypoint detection network on the hand or other dataset, you can use the train script below.
+
+- `python train.py`

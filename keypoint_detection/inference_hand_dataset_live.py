@@ -42,14 +42,10 @@ def get_categories(json_path):
 
 
 if __name__ == "__main__":
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/Ricki_unit_8.flv_000114_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/005236037_01_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/007928028_01_l.jpg")
-    # image = cv2.imread("/home/casey/Pictures/hand_test2.jpg")
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
-    cfg.MODEL.WEIGHTS = "./logs/multiview_test/3/model_final.pth"
+    cfg.MODEL.WEIGHTS = "./logs/multiview_test/example/model_final.pth"
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
     metadata.thing_classes = get_categories("../data/hands_labels.json")
@@ -110,12 +106,6 @@ if __name__ == "__main__":
         predictions["instances"] = predictions["instances"].to("cpu")
 
         get_top_x_predictions(predictions, 1)
-
-        # print(len(predictions["instances"].pred_keypoints))
-
-        # if len(predictions["instances"].pred_keypoints) > 0:
-        #     for i in range(21):
-        #         image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
 
         labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
         scores = predictions["instances"].scores.numpy()

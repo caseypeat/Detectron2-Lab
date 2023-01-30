@@ -15,14 +15,15 @@ from detectron2.evaluation import COCOEvaluator
 class Trainer(DefaultTrainer):
     @classmethod
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
-        return COCOEvaluator("hands_dataset", output_dir="logs/multiview_test/3", kpt_oks_sigmas=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        # return COCOEvaluator("hands_dataset", output_dir="logs/multiview_hands/1", kpt_oks_sigmas=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        return COCOEvaluator("hands_dataset", cfg.OUTPUT_DIR, kpt_oks_sigmas=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
 
 
 if __name__ == "__main__":
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
-    cfg.OUTPUT_DIR = "logs/multiview_test/3"
+    cfg.OUTPUT_DIR = "logs/multiview_test/1"
 
     register_coco_instances(
         name="hands_dataset",

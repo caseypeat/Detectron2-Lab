@@ -42,18 +42,15 @@ def get_categories(json_path):
 
 
 if __name__ == "__main__":
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/Ricki_unit_8.flv_000114_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/005236037_01_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/hand_labels/manual_train/007928028_01_l.jpg")
-    # image = cv2.imread("/home/casey/Downloads/multiview_hand/data_12/188_webcam_2.jpg")
-    image = cv2.imread("/home/casey/Pictures/hand_test2.jpg")
+
+    image = cv2.imread("../images/example_multiview_hand.jpg")
 
     cfg = get_cfg()
     cfg.merge_from_file("./configs/train_rcnn_fpn.yaml")
-    cfg.MODEL.WEIGHTS = "./logs/multiview_test/3/model_final.pth"
+    cfg.MODEL.WEIGHTS = "./logs/multiview_hands/example/model_final.pth"
 
     metadata = MetadataCatalog.get(cfg.DATASETS.TEST[0])
-    metadata.thing_classes = get_categories("../data/multiview_hands.json")
+    metadata.thing_classes = get_categories("./labels/multiview_hands.json")
     metadata.keypoint_names = [
         "F4_KNU1_A",
         "F4_KNU1_B",
@@ -105,34 +102,9 @@ if __name__ == "__main__":
     predictions = predictor(image)
     predictions["instances"] = predictions["instances"].to("cpu")
 
-    get_top_x_predictions(predictions, 1)
-    # print(predictions["instances"].pred_keypoints)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 0, 0]), int(predictions["instances"].pred_keypoints[0, 0, 1])),
-    #     radius=3, color=(255, 0, 0), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 1, 0]), int(predictions["instances"].pred_keypoints[0, 1, 1])),
-    #     radius=3, color=(0, 255, 0), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 2, 0]), int(predictions["instances"].pred_keypoints[0, 2, 1])),
-    #     radius=3, color=(0, 0, 255), thickness=-1)
-    # image = cv2.circle(
-    #     image,
-    #     (int(predictions["instances"].pred_keypoints[0, 3, 0]), int(predictions["instances"].pred_keypoints[0, 3, 1])),
-    #     radius=3, color=(0, 255, 255), thickness=-1)
-    # for i in range(21):
-    #     image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
-    # get_detections_above_confidence(predictions, 0.9)
+    get_detections_above_confidence(predictions, 0.9)
 
     print(predictions["instances"].pred_keypoints)
-
-    # if len(predictions["instances"].pred_keypoints) > 0:
-    #     for i in range(21):
-    #         image = cv2.circle(image, (int(predictions["instances"].pred_keypoints[0, i, 0]), int(predictions["instances"].pred_keypoints[0, i, 1])), radius=3, color=(0, 0, 255), thickness=-1)
-
 
     labels = class_id2label(predictions["instances"].pred_classes, metadata.thing_classes)
     scores = predictions["instances"].scores.numpy()

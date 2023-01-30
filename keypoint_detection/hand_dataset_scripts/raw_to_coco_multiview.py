@@ -43,12 +43,6 @@ def raw_to_coco(root_path):
                     label_filenames.append(label_filename)
 
 
-
-        # for image_filename in image_filenames:
-            # scene, _, image = image_filename[:-4].split("_")
-            # label_filename = f"{scene}_jointsCam_{image}.txt"
-            # label_filenames.append(label_filename)
-
         for image_filename, label_filename in zip(image_filenames, label_filenames):
             with open(os.path.join(dir_path, label_filename), 'r') as file:
                 raw_str = file.read()
@@ -96,9 +90,6 @@ def raw_to_coco(root_path):
             annotation_field["category_id"] = 1
             annotation_field["iscrowd"] = 0
 
-            # x_min, y_min = int(np.amin(handpoints[:, 0])), int(np.amin(handpoints[:, 1]))
-            # x_max, y_max = int(np.amax(handpoints[:, 0])), int(np.amax(handpoints[:, 1]))
-
             width, height = x_max - x_min, y_max - y_min
             annotation_field["bbox"] = [x_min, y_min, width, height]
             annotation_field["area"] = width * height
@@ -120,5 +111,5 @@ def raw_to_coco(root_path):
 if __name__ == "__main__":
     coco_json = raw_to_coco("/home/casey/Downloads/multiview_hand")
 
-    with open("../../data/multiview_hands.json", 'w') as file:
+    with open("../labels/multiview_hand.json", 'w') as file:
         json.dump(coco_json, file)
